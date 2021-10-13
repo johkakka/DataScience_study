@@ -34,7 +34,7 @@ def main():
     # X: other (Explanatory variable)
     # Y: class
     (X_train, X_test, y_train, y_test) = train_test_split(data_le.iloc[:, 1:], data_le.iloc[:, 0],
-                                                          test_size=0.3, random_state=0)
+                                                          test_size=0.1, random_state=0)
     X_train.to_csv('data/x_train.csv')
     X_test.to_csv('data/x_test.csv')
     y_train.to_csv('data/y_train.csv')
@@ -49,7 +49,7 @@ def main():
     # plot
     train_sizes=np.linspace(0.1, 1.0, 10)
     train_sizes, train_scores, test_scores = learning_curve(
-        forest, X_train, y_train, cv=3, train_sizes=train_sizes, random_state=42, shuffle=True
+        forest, X_train, y_train, cv=5, train_sizes=train_sizes, random_state=42, shuffle=True
     )
 
     print("train_sizes(検証したサンプル数): {}".format(train_sizes))
@@ -59,9 +59,25 @@ def main():
     print("test_scores(各サンプル数でのバリデーションスコア): \n{}".format(test_scores))
 
     plt.figure()
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
     plt.grid()
-    plt.plot(train_sizes, train_scores, 'r-')
-    plt.plot(train_sizes, test_scores, 'b--')
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+
+
     plt.show()
 
 
