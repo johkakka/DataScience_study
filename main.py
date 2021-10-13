@@ -15,6 +15,9 @@ def main():
                     "stalk-color-below-ring", "veil-type", "veil-color", "ring-number", "ring-type",
                     "spore-print-color", "population", "habitat"]
 
+    # drop column
+    data = data.drop(columns=["cap-color"])
+
     # Dummy variable
     # Nominal scale
     data_le = pd.get_dummies(data, drop_first=True,
