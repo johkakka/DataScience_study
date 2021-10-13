@@ -34,6 +34,10 @@ def main():
     # Y: class
     (X_train, X_test, y_train, y_test) = train_test_split(data_le.iloc[:, 1:], data_le.iloc[:, 0],
                                                           test_size=0.3, random_state=0)
+    X_train.to_csv('data/x_train.csv')
+    X_test.to_csv('data/x_test.csv')
+    y_train.to_csv('data/y_train.csv')
+    y_test.to_csv('data/y_test.csv')
 
     # Run
     forest = RandomForestRegressor(n_estimators=100, criterion='mse', random_state=1, n_jobs=-1)
