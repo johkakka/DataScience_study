@@ -3,6 +3,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -56,6 +57,12 @@ def main():
     print("train_scores(各サンプル数でのトレーニングスコア): \n{}".format(train_scores))
     print("------------")
     print("test_scores(各サンプル数でのバリデーションスコア): \n{}".format(test_scores))
+
+    plt.figure()
+    plt.grid()
+    plt.plot(train_sizes, train_scores, 'r-')
+    plt.plot(train_sizes, test_scores, 'b--')
+    plt.show()
 
 
 if __name__ == '__main__':
