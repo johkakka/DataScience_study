@@ -3,6 +3,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -13,6 +14,9 @@ def main():
                     "stalk-surface-above-ring", "stalk-surface-below-ring", "stalk-color-above-ring",
                     "stalk-color-below-ring", "veil-type", "veil-color", "ring-number", "ring-type",
                     "spore-print-color", "population", "habitat"]
+
+    # drop column
+    data = data.drop(columns=["cap-color"])
 
     # Dummy variable
     # Nominal scale
@@ -33,7 +37,11 @@ def main():
     # X: other (Explanatory variable)
     # Y: class
     (X_train, X_test, y_train, y_test) = train_test_split(data_le.iloc[:, 1:], data_le.iloc[:, 0],
-                                                          test_size=0.3, random_state=0)
+                                                          test_size=0.1, random_state=0)
+    X_train.to_csv('data/x_train.csv')
+    X_test.to_csv('data/x_test.csv')
+    y_train.to_csv('data/y_train.csv')
+    y_test.to_csv('data/y_test.csv')
 
     # Run
     forest = RandomForestRegressor(n_estimators=100, criterion='mse', random_state=1, n_jobs=-1)
@@ -44,7 +52,7 @@ def main():
     # plot
     train_sizes=np.linspace(0.1, 1.0, 10)
     train_sizes, train_scores, test_scores = learning_curve(
-        forest, X_train, y_train, cv=3, train_sizes=train_sizes, random_state=42, shuffle=True
+        forest, X_train, y_train, cv=5, train_sizes=train_sizes, random_state=42, shuffle=True
     )
 
     print("train_sizes(検証したサンプル数): {}".format(train_sizes))
@@ -52,6 +60,28 @@ def main():
     print("train_scores(各サンプル数でのトレーニングスコア): \n{}".format(train_scores))
     print("------------")
     print("test_scores(各サンプル数でのバリデーションスコア): \n{}".format(test_scores))
+
+    plt.figure()
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+
+
+    plt.show()
 
 
 if __name__ == '__main__':
