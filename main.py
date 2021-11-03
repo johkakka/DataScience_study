@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, learning_curve
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -43,13 +43,14 @@ def main():
     y_test.to_csv('data/y_test.csv')
 
     # Run
-    forest = RandomForestRegressor(n_estimators=100, criterion='mse', random_state=1, n_jobs=-1)
+    # forest = RandomForestRegressor(n_estimators=100, criterion='mse', random_state=1, n_jobs=-1)
+    forest = RandomForestClassifier(n_estimators=100, random_state=1, n_jobs=-1)
     forest.fit(X_train, y_train)
     y_train_pred = forest.predict(X_train)
     y_test_pred = forest.predict(X_test)
 
     # plot
-    train_sizes=np.linspace(0.1, 1.0, 20)
+    train_sizes=np.linspace(0.1, 1.0, 2)
     train_sizes, train_scores, test_scores = learning_curve(
         forest, X_train, y_train, cv=5, train_sizes=train_sizes, random_state=42, shuffle=True
     )
@@ -87,6 +88,31 @@ def main():
 
     plt.show()
 
+
+    # 変数ごとの重要度をみる
+
+    feature = forest.feature_importances_
+    # 特徴量の重要度を上から順に出力する
+    f = pd.DataFrame({'number': range(0, len(feature)),
+                      'feature': feature[:]})
+    f2 = f.sort_values('feature', ascending=False)
+
+    # 特徴量の名前
+    label = data_le.columns[0:][1:]
+
+    # 特徴量の重要度順（降順）
+    indices = np.argsort(feature)[::-1]
+
+    for i in range(len(feature)):
+        print(str(i + 1) + "   " + str(label[indices[i]]) + "   " + str(feature[indices[i]]))
+
+    plt.figure()
+    plt.title('Feature Importance')
+    plt.bar(range(len(feature)), feature[indices], color='lightblue', align='center')
+    plt.xticks(range(len(feature)), label[indices], rotation=90)
+    plt.xlim([-1, len(feature)])
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == '__main__':
     main()
