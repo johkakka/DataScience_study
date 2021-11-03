@@ -2,7 +2,6 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -16,7 +15,7 @@ def main():
                     "spore-print-color", "population", "habitat"]
 
     # drop column
-    data = data.drop(columns=["cap-color"])
+    # data = data.drop(columns=["cap-color"])
 
     # Dummy variable
     # Nominal scale
@@ -50,7 +49,7 @@ def main():
     y_test_pred = forest.predict(X_test)
 
     # plot
-    train_sizes=np.linspace(0.1, 1.0, 10)
+    train_sizes=np.linspace(0.1, 1.0, 20)
     train_sizes, train_scores, test_scores = learning_curve(
         forest, X_train, y_train, cv=5, train_sizes=train_sizes, random_state=42, shuffle=True
     )
@@ -70,16 +69,21 @@ def main():
 
     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.1,
-                     color="r")
+                     color="m")
     plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
                      test_scores_mean + test_scores_std, alpha=0.1, color="g")
-    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="m",
              label="Training score")
-    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+    plt.plot(train_sizes, test_scores_mean, 'x-', color="g",
              label="Cross-validation score")
-
+    plt.xlabel('sample size')
+    plt.ylabel('score')
+    plt.title('Learning Curves')
     plt.legend(loc="best")
 
+    # テストデータでの正解率を出力
+    accuracy = forest.score(X_test, y_test)
+    print("test data accuracy:", accuracy)
 
     plt.show()
 
