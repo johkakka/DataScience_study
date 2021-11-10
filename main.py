@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -15,17 +17,24 @@ def main():
                     "spore-print-color", "population", "habitat"]
 
     # drop column
-    # data = data.drop(columns=["cap-color"])
+    data = data.drop(columns=["cap-shape", "cap-surface", "cap-color", "gill-attachment",
+                    "gill-spacing", "gill-color", "stalk-shape", "stalk-root",
+                    "stalk-color-above-ring",
+                    "stalk-color-below-ring", "veil-type", "veil-color", "ring-number",
+                    "population", "habitat"])
 
     # Dummy variable
     # Nominal scale
+    # data_le = pd.get_dummies(data, drop_first=True,
+                             # columns=["cap-shape", "cap-surface", "cap-color", "bruises", "odor", "gill-attachment",
+                             #          "gill-color", "stalk-shape", "stalk-root", "stalk-surface-above-ring",
+                             #          "stalk-surface-below-ring", "stalk-color-above-ring", "stalk-color-below-ring",
+                             #          "veil-type", "veil-color", "ring-type", "spore-print-color", "habitat"])
     data_le = pd.get_dummies(data, drop_first=True,
-                             columns=["cap-shape", "cap-surface", "cap-color", "bruises", "odor", "gill-attachment",
-                                      "gill-color", "stalk-shape", "stalk-root", "stalk-surface-above-ring",
-                                      "stalk-surface-below-ring", "stalk-color-above-ring", "stalk-color-below-ring",
-                                      "veil-type", "veil-color", "ring-type", "spore-print-color", "habitat"])
+                             columns=["odor", "bruises", "stalk-surface-above-ring",
+                                      "stalk-surface-below-ring", "ring-type", "spore-print-color"])
     # Ordinal scale
-    for column in ["class", "gill-spacing", "gill-size", "ring-number", "population"]:
+    for column in ["class", "gill-size"]:
         selected_column = data_le[column]
         le = preprocessing.LabelEncoder()
         le.fit(selected_column)
@@ -36,7 +45,7 @@ def main():
     # X: other (Explanatory variable)
     # Y: class
     (X_train, X_test, y_train, y_test) = train_test_split(data_le.iloc[:, 1:], data_le.iloc[:, 0],
-                                                          test_size=0.1, random_state=0)
+                                                          test_size=0.3, random_state=0)
     X_train.to_csv('data/x_train.csv')
     X_test.to_csv('data/x_test.csv')
     y_train.to_csv('data/y_train.csv')
@@ -50,7 +59,7 @@ def main():
     y_test_pred = forest.predict(X_test)
 
     # plot
-    train_sizes=np.linspace(0.1, 1.0, 2)
+    train_sizes=np.linspace(0.1, 1.0, 10)
     train_sizes, train_scores, test_scores = learning_curve(
         forest, X_train, y_train, cv=5, train_sizes=train_sizes, random_state=42, shuffle=True
     )
