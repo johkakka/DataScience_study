@@ -47,7 +47,7 @@ def main():
 
     # Run
     forest = RandomForestRegressor(n_estimators=20, criterion='mse', random_state=1, n_jobs=-1)
-    # forest = RandomForestClassifier(n_estimators=10, random_state=1, n_jobs=-1)
+    # forest = RandomForestClassifier(n_estimators=10, random_state=1, n_jobs=-1, max_features=10, max_depth=10)
     forest.fit(X_train, y_train)
     y_train_pred = forest.predict(X_train)
     y_test_pred = forest.predict(X_test)
@@ -112,9 +112,9 @@ def main():
 
     plt.figure()
     plt.title('Feature Importance')
-    plt.bar(range(len(feature)), feature[indices], color='lightblue', align='center')
-    plt.xticks(range(len(feature)), label[indices], rotation=90)
-    plt.xlim([-1, len(feature)])
+    plt.bar(range(len(indices)), feature[indices], color='lightblue', align='center')
+    plt.xticks(range(len(indices)), label[indices], rotation=90)
+    plt.xlim([-1, len(indices)])
     plt.tight_layout()
     plt.show()
 
